@@ -12,13 +12,14 @@
                         <tr>
                             <th>Nombre</th>
                             <th>Cédula</th>
-                            <th>Area</th>
+                            <th>Oficina</th>
                             <th>Fecha solicitud</th>
                             <th>Fecha inicio</th>
                             <th>Fecha fin</th>
                             <th>Fecha reintegro</th>
                             <th>Motivo</th>
                             <th>Descripcion</th>
+                            <th>Turno</th>
                             <th>Acción</th>
                         </tr>
                     </thead>
@@ -27,13 +28,18 @@
                         <tr>
                             <td>{{ $p->applicant->person->name }}</td>
                             <td>{{ $p->applicant->person->card_id }}</td>
-                            <td>{{ $p->applicant->area->name }}</td>
+                            <td>{{ $p->applicant->office->name }}</td>
                             <td>{{substr($p->created_at,0,-9)}}</td>
                             <td>{{$p->start_date}}</td>
                             <td>{{$p->end_date}}</td>
                             <td>{{$p->refund_date}}</td>
                             <td>{{$p->reason->name}}</td>
                             <td>{{$p->description}}</td>
+                            @if (isset($turno))
+                                <td>{{$turno}}</td>
+                            @else
+                            <td>-</td>
+                            @endif
                             <td>
                                 <form action="{{route('permits.action',$p->id)}}" method="POST">
                                     @csrf

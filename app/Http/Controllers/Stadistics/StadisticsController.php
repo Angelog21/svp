@@ -116,6 +116,28 @@ class StadisticsController extends Controller
         }else{
             return back()->with('warning','Usted no tiene permiso para acceder a este módulo');
         }
+    }
+
+    public function getPersonal(Request $request){
+        if($request->path() == "holidays/estadisticas"){
+            $holidays = Holiday::where('state',Holiday::DISFRUTANDO)->get();
+            if(auth()->user()->role->id == Role::SUPERADMIN){
+                $title = "PERSONAL DE VACACIONES - MPPEU";
+                $pdf = \PDF::loadView('reports.listaGeneral',['holidays'=>$holidays,'title'=>$title]);
+                return $pdf->stream();
+            }else{
+                return back()->with('error','Error, no puede visualizar esta constancia');
+            }
+        }else{
+            $holidays = Permit::where('state',Permit::DISFRUTANDO)->get();
+            if(auth()->user()->role->id == Role::SUPERADMIN){
+                $title = "PERSONAL DE PERMISO - MPPEU";
+                $pdf = \PDF::loadView('reports.listaGeneral',['holidays'=>$holidays,'title'=>$title]);
+                return $pdf->stream();
+            }else{
+                return back()->with('error','Error, no puede visualizar esta constancia');
+            }
+        }
 
     }
 }

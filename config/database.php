@@ -78,6 +78,21 @@ return [
             'sslmode' => 'prefer',
         ],
 
+        'sige' => [
+            'driver' => 'pgsql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('SG_HOST', '127.0.0.1'),
+            'port' => env('SG_PORT', '5432'),
+            'database' => env('SG_DATABASE', 'forge'),
+            'username' => env('SG_USERNAME', 'forge'),
+            'password' => env('SG_PASSWORD', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'schema' => 'public',
+            'sslmode' => 'prefer',
+        ],
+
         'sqlsrv' => [
             'driver' => 'sqlsrv',
             'url' => env('DATABASE_URL'),

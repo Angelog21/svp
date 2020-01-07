@@ -30,16 +30,28 @@ class PeriodController extends Controller
     public function store(Request $request){
         $p = $request['periods'];
         $a = 0;
+        $periods = Period::where('user_id',$request['user_id'])->get('period')->toArray();
         for($i = 0; $i < $p; $i++){
+            $period = $request['period'.($i+1)];
+            $expdate = $request['expiration_date'.($i+1)];
+            $days = $request['available_days'.($i+1)];
             try{
-                $newp = new Period;
-                $newp->user_id = $request['user_id'];
-                $newp->period = $request['period'.($i+1)];
-                $newp->expiration_date = $request['expiration_date'.($i+1)];
-                $newp->available_days = 0;
-                $newp->save();
-                if($newp->save() == true){
-                    $a++;
+                if($request[$period] == "on"){
+                    if(array_search($period,array_column($periods,'period')) === false){
+                        $newp = new Period;
+                        $newp->user_id = $request['user_id'];
+                        $newp->period = $period;
+                        $newp->expiration_date = $expdate;
+                        $newp->available_days = $days;
+                        $newp->save();
+                        if($newp->save() == true){
+                            $a++;
+                        }
+                    }else{
+                        $a++;
+                    }
+                }else{
+                    $des = true;
                 }
             }catch(Exception $e){
                 alert()->error($e);
@@ -50,6 +62,10 @@ class PeriodController extends Controller
             alert()->success('Se ha guardado el registro exitosamente');
             return redirect(route('holidays.createHoliday',$request['user_id']));
         }else{
+            if(isset($des)){
+                alert()->success('Se ha guardado el registro exitosamente');
+                return redirect(route('holidays.createHoliday',$request['user_id']));
+            }
             alert()->error('Ha ocurrido un error al guardar los datos');
             return back();
         }

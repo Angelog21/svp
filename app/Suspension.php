@@ -11,8 +11,11 @@ class Suspension extends Model
         'supervisor_id',
         'suspension_date',
         'refund_date',
+        'enjoyed_days',
         'leftover_days',
         'reason'
     ];
+
+    public $timestamps = false;
 
 }

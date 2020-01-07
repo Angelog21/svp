@@ -38,7 +38,7 @@
                             @endif
                             <td>{{$permit->description}}</td>
                             <td>{{$permit->state}}</td>
-                            @if ($permit->state == App\Permit::APROBADO || $permit->state == App\Permit::COMPLETO)
+                            @if ($permit->state == App\Permit::COMPLETO)
                             <td><a href="{{route('permits.cpdf',encrypt($permit->id))}}" class="btn-floating btn-large waves-effect waves-light red hoverable"><i class="material-icons">picture_as_pdf</i></a></td>
                             @else
                             <td><button class="btn-floating btn-large waves-effect waves-light red hoverable" disabled><i class="material-icons">picture_as_pdf</i></button></td>

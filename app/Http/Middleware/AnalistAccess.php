@@ -16,9 +16,9 @@ class AnalistAccess
      */
     public function handle($request, Closure $next)
     {
-        if(auth()->user()->role->id == Role::ANALISTA_VACACIONES)
+        if(auth()->user()->role->id == Role::ANALISTA_VACACIONES || auth()->user()->role->id == Role::ANALISTA_PERMISOS)
             return $next($request);
 
-        return redirect('home')->with('warning','Usted no tiene los permisos requeridos para acceder a este modulo');
+        return redirect(route('home'))->with('warning','Usted no tiene los permisos requeridos para acceder a este modulo');
     }
 }

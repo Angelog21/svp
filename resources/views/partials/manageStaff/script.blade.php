@@ -3,15 +3,32 @@
         let cedula = $('#cedula').val();
         if(cedula != ''){
             let url = "{{route('holidays.search')}}"+'/'+cedula;
-
+            //para validar que se ejecuta una sola vez la funcion
             $.get(url, function(result){
+                console.log(result);
                 if(result.length > 0){
-                    $('.data').removeClass('hide');
-                    $('#name').val(result[0].name);
-                    $('#ext').val(result[0].extension);
-                    $('#phone').val(result[0].phone);
-                    $('#date_admission').val(result[0].date_admission);
-                    $('#user_id').val(result[0].id);
+                    if($('#periods').val() == ''){
+                        $('.data').removeClass('hide');
+                        $('#name').val(result[0][0].name);
+                        $('#ext').val(result[0][0].extension);
+                        $('#phone').val(result[0][0].phone);
+                        $('#date_admission').val(result[0][0].date_admission);
+                        $('#user_id').val(result[0][0].user.id);
+                        //datos de los periodos
+                        let i = 1;
+                        for(const date in result[1]){
+                            if(i%2 == 0){
+                                $('.cp').append('<div class="col s2 mt-4">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Insertar:<div class="switch">#'+i+'&nbsp;&nbsp;&nbsp;&nbsp;<label>No<input type="checkbox" name="'+date+'" checked="checked"><span class="lever"></span>Si</label></div></div><div class="input-field col s4 lighten-2"> Período:<input name="period'+i+'" type="text" value="'+date+'" readonly></div><div class="input-field col s4 lighten-2">Fecha de Vencimiento:<input type="text" name="expiration_date'+i+'" value="'+result[1][date]+'" readonly></div><div class="input-field col s2 lighten-2">Días disponibles:<input type="text" name="available_days'+i+'" value="0"></div>');
+                            }else{
+                                $('.cp').append('<div class="col s2 mt-4">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Insertar:<div class="switch">#'+i+' &nbsp;&nbsp;&nbsp;&nbsp;<label>No<input type="checkbox" name="'+date+'" checked="checked"><span class="lever"></span>Si</label></div></div><div class="input-field col s4"> Período:<input name="period'+i+'" type="text" value="'+date+'" readonly></div><div class="input-field col s4">Fecha de Vencimiento:<input type="text" name="expiration_date'+i+'" value="'+result[1][date]+'" readonly></div><div class="input-field col s2">Días disponibles:<input type="text" name="available_days'+i+'" value="0"></div>');
+                            }
+                            i++;
+                        }
+                        $("#periods").val(--i);
+                        $('#registrar').removeClass('hide');
+                    }else{
+                        alert('Ya se realizó la busqueda')
+                    }
                 }else{
                     alert('No existe esa cedula en nuestros registros');
                 }
@@ -20,54 +37,9 @@
             alert('Debe ingresar una cédula');
         }
     }
-    function period(){
-        let period = parseInt($('#cant_period').val());
-        $('#periods').val(period);
-        $('.cp').empty();
-        for(var i = 0; i < period; i++){
-            $('.cp').append('<div class="input-field col s6">Período:<input id="period" name="period'+(i+1)+'" type="text" required autocomplete="Período"></div><div class=" input-field col s6">Fecha de Vencimiento:<input type="date" class="datepicker" id="e'+(i+1)+'" name="expiration_date'+(i+1)+'" required autocomplete="Fecha Vencimiento"></div>');
-            $('#e'+(i+1)).pickadate({
-                monthsFull: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
-                monthsShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
-                weekdaysFull: ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'],
-                weekdaysShort: ['Dom','Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
-                max: true,
-                selectMonths: true, // Creates a dropdown to control month
-                selectYears: 25, // Creates a dropdown of 15 years to control year
-                today: 'Hoy',
-                clear: 'Limpiar',
-                close: 'Ok',
-                closeOnSelect: true, // Close upon selecting a date
-                formatSubmit: 'yyyy-mm-dd',
-                hiddenName: true
-            });
-        }
-        $('#registrar').removeClass('hide');
-    }
 
-    function holiday(){
-        let holiday = parseInt($('#cant_holiday').val());
-        $('#holidays').val(holiday);
-        $('.cp').empty();
-        /*
-        for(var i = 0; i < holiday; i++){
-            $('.cp').append('<div class="input-field col s6">Período:<input id="holiday" name="holiday'+(i+1)+'" type="text" required autocomplete="Vacacion"></div><div class=" input-field col s6">Fecha de Vencimiento:<input type="date" class="datepicker" id="e'+(i+1)+'" name="expiration_date'+(i+1)+'" required autocomplete="Fecha Vencimiento"></div>');
-            $('#e'+(i+1)).pickadate({
-                monthsFull: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
-                monthsShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
-                weekdaysFull: ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'],
-                weekdaysShort: ['Dom','Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
-                max: true,
-                selectMonths: true, // Creates a dropdown to control month
-                selectYears: 25, // Creates a dropdown of 15 years to control year
-                today: 'Hoy',
-                clear: 'Limpiar',
-                close: 'Ok',
-                closeOnSelect: true, // Close upon selecting a date
-                formatSubmit: 'yyyy-mm-dd',
-                hiddenName: true
-            });
-        }*/
-        $('#registrar').removeClass('hide');
+    function validar(e){
+        tecla = (document.all) ? e.keyCode : e.which;
+        if (tecla==13) search();
     }
 </script>

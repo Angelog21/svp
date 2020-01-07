@@ -13,6 +13,7 @@ class Permit extends Model
     const APROBADO = 'Aprobado';
     const RECHAZADO = 'Rechazado';
     const PROCESO = 'En proceso';
+    const DISFRUTANDO = 'En permiso';
     const COMPLETO = 'Completo';
 
     protected $fillable = [

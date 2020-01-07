@@ -4,82 +4,54 @@ namespace App\Http\Controllers\Reason;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Reason;
 
 class ReasonController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        //
+        $reasons = Reason::all();
+        if(!$reasons->isEmpty()){
+            return view('permits.reasonManage',compact('reasons'));
+        }
+        return view('permits.reasonManage');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        //
+        $reason = new Reason;
+        $reason->name = $request->name;
+        $reason->save();
+        if($reason->save()){
+            return back()->with('success','Se ha guardado el motivo exitosamente');
+        }
+        return back()->with('error','Error al guardar la fecha');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id)
     {
-        //
+        $reason = Reason::findOrFail($id);
+        return view('partials.reason.form2',compact('reason'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
-        //
+        $reason = Reason::findOrFail($id);
+        $reason->name = $request->name;
+        $reason->save();
+        if($reason->save()){
+            alert()->success('Se ha editado el motivo correctamente');
+            return redirect()->route('permits.reasonAdmin');
+        }
+        alert()->error('Error al editar el motivo');
+        return redirect()->route('permits.reasonAdmin');
+
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
-        //
+        $reason = Reason::findOrFail($id);
+        $reason->delete();
+        return back()->with('success','Motivo eliminado correctamente');
     }
 }

@@ -31,7 +31,7 @@ class HolidayController extends Controller
     public function store(Request $request)
     {
         $h = DB::table('holidays')->selectRaw('DATE(created_at) AS date')->whereDate('created_at',Carbon::now()->format('Y-m-d'))->get();
-        if(!$h->isEmpty()){
+        if($h->isEmpty()){
             $success = true;
             $p_id = [];
             if(isset($request['p'])){
@@ -237,7 +237,7 @@ class HolidayController extends Controller
         }
         if($success === true){
             DB::commit();
-            return redirect(route('holidays.menu'))->with('success',$text);
+            return back()->with('success',$text);
         }
         return redirect('home')->with('error',$success);
     }
@@ -400,7 +400,7 @@ class HolidayController extends Controller
                 return view('holidays.holiday_request',compact('holidays'));
             }
         }
-        return back()->with('warning','No tiene nuevas solicitudes');
+        return redirect(route('holidays.menu'))->with('warning','No tiene nuevas solicitudes');
     }
 
     public function revision(){
@@ -414,8 +414,7 @@ class HolidayController extends Controller
     public function records(){
         $h = Holiday::orderby('id','DESC')->get();
         if(!$h->isEmpty()){
-            $user = User::where('id',$h[0]->applicant_id)->get();
-            return view('holidays.holidays_records',compact('h','user'));
+            return view('holidays.holidays_records',compact('h'));
         }
         return back()->with('info','no hay registros');
     }
@@ -426,8 +425,13 @@ class HolidayController extends Controller
         $applicant = User::findOrFail($holiday->applicant_id);
         $supervisor = User::findOrFail($holiday->supervisor_id);
         $approver = User::findOrFail($holiday->approver_id);
+        $freedays = Freeday::getDaysInRange($holiday->start_date,$holiday->end_date);
+        $days = Period::getAvailableDaysByUser($applicant->id) - $holiday->request_days;
+        if($days<0){
+            $days = 0;
+        }
         if(auth()->user()->role->id == Role::ANALISTA_VACACIONES || auth()->user()->id == $applicant->id){
-            $pdf = \PDF::loadView('reports.reporte_vacaciones',['holiday'=>$holiday,'applicant'=>$applicant,'supervisor'=>$supervisor,'approver'=>$approver]);
+            $pdf = \PDF::loadView('reports.reporte_vacaciones',['holiday'=>$holiday,'applicant'=>$applicant,'supervisor'=>$supervisor,'approver'=>$approver,'freedays'=>$freedays,'days'=>$days]);
             return $pdf->stream();
         }else{
             return back()->with('error','Error, no puede visualizar esta constancia');
@@ -453,6 +457,64 @@ class HolidayController extends Controller
         $user = User::where('id',$user_id)->get();
         $approver = User::getApprover($user_id);
         return view('holidays.holiday_create_form',compact('periods','user','approver'));
+    }
+
+    public function createByStaff(Request $request){
+        //dd($request);
+        $p = $request['holidays'];
+        $a = 0;
+        $applicant = User::where('id',$request['user_id'])->get();
+        for($i = 0; $i < $p; $i++){
+            $periods = $request['periods'.($i+1)];
+            $sd = Carbon::createFromFormat('Y-m-d',$request['sd'.($i+1)]);
+            $ed = Carbon::createFromFormat('Y-m-d',$request['ed'.($i+1)]);
+            $rd = Carbon::createFromFormat('Y-m-d',$request['rd'.($i+1)]);
+            $ob = $request['observation'.($i+1)];
+            $rdays = $sd->diffInDays($ed);
+            while($sd <= $ed){
+                if($sd->isSunday() || $sd->isSaturday()){
+                    $rdays--;
+                }
+                $sd->addDay();
+            }
+
+            try{
+                $newh = new Holiday;
+                $newh->applicant_id = $request['user_id'];
+                $newh->approver_id = $request['approver_id'];
+                $newh->office_id = $applicant[0]->office_id;
+                $newh->request_days = $rdays;
+                $newh->enjoyed_days = $rdays;
+                $newh->leftover_days = 0;
+                $newh->start_date = $sd;
+                $newh->end_date = $ed;
+                $newh->refund_date = $rd;
+                $newh->state = Holiday::COMPLETO;
+                $newh->observation = $ob;
+                $newh->save();
+                if($newh->save() == true){
+                    foreach($periods as $val){
+                        $newh->periods()->attach($val);
+                    }
+                    $a++;
+                }
+            }catch(Exception $e){
+                alert()->error($e);
+                return back();
+            }
+        }
+        if($a == $p){
+            alert()->success('Se ha guardado el registro exitosamente');
+            return redirect(route('holidays.search'));
+        }else{
+            if(isset($des)){
+                alert()->success('Se ha guardado el registro exitosamente');
+                return redirect(route('holidays.search'));
+            }
+            alert()->error('Ha ocurrido un error al guardar los datos');
+            return back();
+        }
+
     }
 
 }

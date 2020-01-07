@@ -11,8 +11,6 @@
                         <tr>
                             <th>Nombre</th>
                             <th>Cédula</th>
-                            <th>Area</th>
-                            <th>Direccion</th>
                             <th>Oficina</th>
                             <th>Fecha solicitud</th>
                             <th>Fecha inicio</th>
@@ -26,11 +24,9 @@
                 <tbody>
                     @forelse ($h as $holiday)
                         <tr>
-                            <td>{{ $user[0]->person->name }}</td>
-                            <td>{{ $user[0]->person->card_id }}</td>
-                            <td>{{ $user[0]->area->name }}</td>
-                            <td>{{ $user[0]->area->direction->name }}</td>
-                            <td>{{ $user[0]->area->direction->office->acronimo }}</td>
+                            <td>{{ $holiday->applicant->person->name }}</td>
+                            <td>{{ $holiday->applicant->person->card_id }}</td>
+                            <td>{{ $holiday->applicant->office->acronimo }}</td>
                             <td>{{substr($holiday->created_at,0,-9)}}</td>
                             <td>{{$holiday->start_date}}</td>
                             <td>{{$holiday->end_date}}</td>

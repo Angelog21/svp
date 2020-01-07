@@ -12,7 +12,7 @@
         <div class="col s4"></div>
         <div class="input-field col s4">
             <i class="material-icons prefix">vpn_key</i>
-            <input id="cedula" type="text" class="validate" required autocomplete="Cedula" autofocus>
+            <input id="cedula" type="text" class="validate" required autocomplete="Cedula" onkeypress="validar(event)" autofocus>
             <label for="cedula">Cédula</label>
         </div>
         <div class="col s4" style="margin-top:30px;">
@@ -47,7 +47,7 @@
             </div>
         </div>
         {{--datos periodos--}}
-        <div class="row">
+        {{--<div class="row">
             <h4 class="center mt-4">
                 Períodos
             </h4>
@@ -61,8 +61,11 @@
                     @endfor
                 </select>
             </div>
-        </div>
+        </div>--}}
         <div class="row">
+            <h4 class="center mt-4">
+                Períodos
+            </h4>
             <form action="{{route('holidays.periodStore')}}" method="post" id="cperiod">
                 @csrf
                 <input type="hidden" id="user_id" name="user_id">
@@ -70,7 +73,7 @@
                 <div class="cp"></div>
                 <div class="row">
                     <div class="col s5"></div>
-                    <button type="submit" class="btn green darken-3 center hide" id="registrar">Registrar</button>
+                    <button type="submit" class="btn green darken-3 center hide" id="registrar" style="margin-top:40px">Registrar</button>
                 </div>
             </form>
         </div>

@@ -21,6 +21,7 @@ class CreateSuspensionsTable extends Migration
             $table->foreign('supervisor_id')->references('id')->on('users');
             $table->date('suspension_date');
             $table->date('refund_date');
+            $table->integer('enjoyed_days');
             $table->integer('leftover_days');
             $table->string('reason',200);
         });

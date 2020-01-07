@@ -9,7 +9,7 @@
               <form method="POST" action="{{ route('login') }}">
                 @csrf
                <div class="valign center mt-4">
-                <img src="{{ asset('image/user.png') }}" alt="">
+                <img src="{{ asset('image/user.png') }}" width="150" alt="">
                     <!--<i class="large material-icons prefix">account_circle</i>-->
                </div>
                 <h3 class="valign center mt-4">{{ __("Sistema Vacaciones y Permisos") }}</h3>

@@ -9428,7 +9428,7 @@ main {
 }
 
 .mt-4{
-   margin-top: 40px; 
+   margin-top: 40px;
 }
 
 /* label focus color */
@@ -9443,7 +9443,7 @@ main {
 
 /* Este cambia el color del label del campo cuando no está seleccionado */
 .input-field label {
-    color: #1565c0 ; 
+    color: #1565c0 ;
   }
 
 /* Si usas la propiedad validate, el color de la línea al validar, será este */
@@ -9464,11 +9464,11 @@ main {
 
   /* este cambia el color al ícono cuando entras a un campo */
 .input-field .prefix.active {
-    color: #0d47a1  !important; 
+    color: #0d47a1  !important;
   }
 
 .input-field .prefix {
-    color: #1565c0 !important; 
+    color: #1565c0 !important;
   }
 
 .waves-effect.waves-blue .waves-ripple {
@@ -9508,7 +9508,7 @@ div#tres{
 
 div#cuatro{
     background-color: rgb(32, 82, 114);
-    
+
 }
 
 div#cinco{
@@ -9534,7 +9534,7 @@ div#tre{
 
 div#cua{
   background-color: rgb(83, 27, 126);
-  
+
 }
 
 div#cin{
@@ -9636,5 +9636,14 @@ textarea.materialize-textarea:focus + label {
   width: 220px;
   height: 250px;
 }
+
+.switch label input[type=checkbox]:checked+.lever {
+    background-color: rgb(53, 67, 148) !important;
+}
+
+.switch label input[type=checkbox]:checked+.lever:after {
+    background-color: rgb(29, 45, 197) !important;
+}
+
 .morris-hover{position:absolute;z-index:1000}.morris-hover.morris-default-style{border-radius:10px;padding:6px;color:#666;background:rgba(255,255,255,0.8);border:solid 2px rgba(230,230,230,0.8);font-family:sans-serif;font-size:12px;text-align:center}.morris-hover.morris-default-style .morris-hover-row-label{font-weight:bold;margin:0.25em 0}
 .morris-hover.morris-default-style .morris-hover-point{white-space:nowrap;margin:0.1em 0}

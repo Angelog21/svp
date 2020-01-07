@@ -39,7 +39,7 @@ class SuccessLogin
             $date1 = date('Y').'-'.substr($date_admission,5);
             if($date1 <= date('Y-m-d')){
                 PeriodController::newPeriod();
-                alert()->success("Usted tiene un período vencido")->persistent();
+                alert()->success("Usted tiene un período vacacional vencido")->persistent();
             }
 
         }

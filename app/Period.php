@@ -66,9 +66,43 @@ class Period extends Model
         return auth()->user()->periods->sum('available_days');
     }
 
+    public static function getAvailableDaysByUser($id){
+        $u = User::findOrFail($id);
+        return $u->periods->sum('available_days');
+    }
+
     public static function getPeriod($id){
         $period = Period::where('id',$id)->get();
         return $period[0]->original;
     }
 
+    public static function getFirstsPeriods($user_id){
+        //se obtendrá la fecha de inicio
+        $user = User::where('id',$user_id)->with('person')->get();
+        $date_admission = $user[0]->person->date_admission;
+        $year = substr($date_admission,0,4);
+        $date = date('Y').substr($date_admission,4);
+        $periods = [];
+        //obtener el año de la fecha de inicio y mientras sea menor o igual al año actual incrementará
+        while($year <= date('Y')){
+            if($year == date('Y')){
+                if($date > date('Y-m-d')){
+                    break;
+                }else{
+                    $nyear = $year+1;
+                    $name = $year."-".$nyear;
+                    $expiration_date = $year.substr($date,4);
+                    $periods[$name] = $expiration_date;
+                    $year++;
+                }
+            }else{
+                $nyear = $year+1;
+                $name = $year."-".$nyear;
+                $expiration_date = $year.substr($date,4);
+                $periods[$name] = $expiration_date;
+                $year++;
+            }
+        }
+        return $periods;
+    }
 }

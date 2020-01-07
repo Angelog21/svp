@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Holiday;
 use App\Permit;
+use App\Person;
 use Illuminate\Support\Facades\Session;
 
 class HomeController extends Controller
@@ -34,11 +35,16 @@ class HomeController extends Controller
                 return view('home');
             }
         }elseif($p){
-            if($h->state == Permit::APROBADO){
+            if($p->state == Permit::APROBADO){
                 alert()->success('La solicitud de permiso ha sido aprobada!');
                 return view('home');
             }
         }
         return view('home');
     }
+
+    public function prueba(){
+        dd(Person::all());
+    }
+
 }

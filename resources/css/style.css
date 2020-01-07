@@ -15,7 +15,7 @@ main {
 }
 
 .mt-4{
-   margin-top: 40px; 
+   margin-top: 40px;
 }
 
 /* label focus color */
@@ -30,7 +30,7 @@ main {
 
 /* Este cambia el color del label del campo cuando no está seleccionado */
 .input-field label {
-    color: #1565c0 ; 
+    color: #1565c0 ;
   }
 
 /* Si usas la propiedad validate, el color de la línea al validar, será este */
@@ -51,11 +51,11 @@ main {
 
   /* este cambia el color al ícono cuando entras a un campo */
 .input-field .prefix.active {
-    color: #0d47a1  !important; 
+    color: #0d47a1  !important;
   }
 
 .input-field .prefix {
-    color: #1565c0 !important; 
+    color: #1565c0 !important;
   }
 
 .waves-effect.waves-blue .waves-ripple {
@@ -95,7 +95,7 @@ div#tres{
 
 div#cuatro{
     background-color: rgb(32, 82, 114);
-    
+
 }
 
 div#cinco{
@@ -121,7 +121,7 @@ div#tre{
 
 div#cua{
   background-color: rgb(83, 27, 126);
-  
+
 }
 
 div#cin{
@@ -222,4 +222,12 @@ textarea.materialize-textarea:focus + label {
 .carousel .carousel-item {
   width: 220px;
   height: 250px;
+}
+
+.switch label input[type=checkbox]:checked+.lever {
+    background-color: rgb(53, 67, 148) !important;
+}
+
+.switch label input[type=checkbox]:checked+.lever:after {
+    background-color: rgb(29, 45, 197) !important;
 }

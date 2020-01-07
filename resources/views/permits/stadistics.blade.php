@@ -29,6 +29,14 @@
                 <h4 class="center">Solicitudes mensuales</h4>
                 <div id="barchart"></div>
             </div>
+            @if (!isset($office))
+            <div class="row">
+                <div class="col s5"></div>
+                <a style="margin:100px 0px;" href="{{route('permits.pdfGeneral')}}" class="center btn btn-large waves-effect waves-light blue hoverable">Personal de Permiso <i class="material-icons">picture_as_pdf</i></a>
+            </div>
+            @else
+
+            @endif
         </div>
     </div>
 @endsection

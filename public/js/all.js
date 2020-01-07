@@ -13475,7 +13475,6 @@ $('#ff').pickadate({
   hiddenName: true,
   onClose: function onClose() {
     var date1 = new Date($('#fival').val());
-    date1.setDate(date1.getDate() + 1);
     var date2 = new Date(this.get('select', 'yyyy-mm-dd'));
     var diffdays = date2.getTime() - date1.getTime();
     var days = Math.round(diffdays / (1000 * 60 * 60 * 24));
@@ -13492,6 +13491,27 @@ $('#ff').pickadate({
     days -= weekend;
     $('#d').text(days);
     $('#days').val(days);
+  }
+});
+$('#fr').pickadate({
+  monthsFull: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+  monthsShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+  weekdaysFull: ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'],
+  weekdaysShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+  selectMonths: true,
+  // Creates a dropdown to control month
+  selectYears: 1,
+  // Creates a dropdown of 15 years to control year,
+  min: 1,
+  disable: [1, 7],
+  today: 'Hoy',
+  clear: 'Limpiar',
+  close: 'Ok',
+  closeOnSelect: true,
+  // Close upon selecting a date
+  formatSubmit: 'yyyy/mm/dd',
+  onSet: function onSet() {
+    $("#frval").val(this.get('select', 'yyyy-mm-dd'));
   }
 }); //fin pickadate vacaciones
 
@@ -13580,6 +13600,13 @@ $('#ffp').pickadate({
     } else {
       $('#t').remove();
     }
+  }
+});
+$('.carousel-item').on('click', function (e) {
+  var ar = e.target.classList;
+
+  if ($(this).hasClass('active')) {
+    Materialize.toast('¡Debe hacer click en el ícono!', 2000, 'rounded');
   }
 });
 $('select').material_select();
@@ -35920,11 +35947,11 @@ Licensed under the BSD-2-Clause License.
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\laragon\www\svp2\resources\js\jquery.js */"./resources/js/jquery.js");
-__webpack_require__(/*! C:\laragon\www\svp2\resources\js\back.min.js */"./resources/js/back.min.js");
-__webpack_require__(/*! C:\laragon\www\svp2\resources\js\materialize.js */"./resources/js/materialize.js");
-__webpack_require__(/*! C:\laragon\www\svp2\resources\js\morris.js */"./resources/js/morris.js");
-module.exports = __webpack_require__(/*! C:\laragon\www\svp2\resources\js\all.js */"./resources/js/all.js");
+__webpack_require__(/*! /var/www/html/svp2/resources/js/jquery.js */"./resources/js/jquery.js");
+__webpack_require__(/*! /var/www/html/svp2/resources/js/back.min.js */"./resources/js/back.min.js");
+__webpack_require__(/*! /var/www/html/svp2/resources/js/materialize.js */"./resources/js/materialize.js");
+__webpack_require__(/*! /var/www/html/svp2/resources/js/morris.js */"./resources/js/morris.js");
+module.exports = __webpack_require__(/*! /var/www/html/svp2/resources/js/all.js */"./resources/js/all.js");
 
 
 /***/ })

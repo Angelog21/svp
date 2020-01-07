@@ -42,8 +42,8 @@ class PermitController extends Controller
         $turn = $request['turn'] ? $request['turn'] : null;
 
         //aprobador
-        $approver = User::getSupervisor();
-        if(!$approver){
+        $approver = User::getSupervisor(0);
+        if(!$approver || auth()->user()->id == $approver[0]->id){
             $approver = User::getApprover(0);
         }
         DB::beginTransaction();
@@ -74,13 +74,13 @@ class PermitController extends Controller
                 $notification2 = Notification::create([
                     'origin_id'=>auth()->user()->id,
                     'destination_id'=>$approver2[0]->id,
-                    'title'=>'Solicitud de vacaciones',
-                    'description'=>Notification::SOLICITUD_VACACIONES
+                    'title'=>'Solicitud de permiso',
+                    'description'=>Notification::SOLICITUD_PERMISO
                 ]);
             }else{
                 $notification = Notification::create([
                     'origin_id'=>auth()->user()->id,
-                    'destination_id'=>$approver,
+                    'destination_id'=>$approver[0]->id,
                     'title'=>'Solicitud de permiso',
                     'description'=>Notification::SOLICITUD_PERMISO
                 ]);
@@ -103,14 +103,10 @@ class PermitController extends Controller
 
     }
 
-    public function show($id)
-    {
-        //
-    }
-
     public function edit($id)
     {
-        //
+        $permit = Permit::findOrFail($id);
+        return view('permits.permit_confirmRefund',compact('permit'));
     }
 
     public function update(Request $request, $id)
@@ -122,7 +118,7 @@ class PermitController extends Controller
             $h->save();
             if($h->supervisor->role->id == Role::SUPERVISOR){
                 $d = User::getApprover(0);
-                 $destino = $d[0]->id;
+                $destino = $d[0]->id;
             }
         }else{
             $h->state = Permit::RECHAZADO;
@@ -259,7 +255,7 @@ class PermitController extends Controller
         if($permit->isEmpty()){
             return view('permits.form_permit',compact('reason'));
         }else{
-            if($permit[0]->state == Permit::APROBADO || $permit[0]->state == Permit::PROCESO || $permit[0]->state == Permit::FIRMADO || $permit[0]->state == Permit::DISFRUTANDO){
+            if($permit[0]->state == Permit::APROBADO || $permit[0]->state == Permit::PROCESO){
                 return back()->with('info','Ya tiene una solicitud en proceso');
             }
             return view('permits.form_permit',compact('reason'));
@@ -267,7 +263,7 @@ class PermitController extends Controller
     }
 
     public function status(){
-        $permit = Permit::where('applicant_id',auth()->user()->id)->where('state','<>',Permit::COMPLETO)->get();
+        $permit = Permit::where('applicant_id',auth()->user()->id)->wherein('state',[Permit::APROBADO,Permit::PROCESO])->get();
         if(!$permit->isEmpty()){
             if($permit[0]->turn){
                 if($permit[0]->turn == 't'){
@@ -280,19 +276,29 @@ class PermitController extends Controller
             }
             return view('permits.permit_status',compact('permit','turn'));
         }
-        return back()->with('warning','Aun no ha solicitado vacaciones');
+        return back()->with('warning','Aun no ha solicitado permiso');
     }
 
     public function getRequestPermits(){
         if(auth()->user()->role->id == Role::DIRECTOR_LINEA || auth()->user()->role->id == Role::DIRECTOR_GENERAL || auth()->user()->role->id == Role::SUPERADMIN){
             $permits = Permit::where('state',Permit::PROCESO)->where('office_id',auth()->user()->office->id)->get();
             if(!$permits->isEmpty()){
-                return view('permits.permit_request',compact('permits'));
+                if($permits[0]->turn){
+                    $turno = $permits[0]->turn == 'm' ? 'Mañana' : 'Tarde';
+                }else{
+                    $turno = null;
+                }
+                return view('permits.permit_request',compact('permits','turno'));
             }
         }elseif(auth()->user()->role->id == Role::SUPERVISOR){
             $permits = Permit::where('state',Permit::PROCESO)->where('supervisor_id',auth()->user()->id)->get();
             if(!$permits->isEmpty()){
-                return view('permits.permit_request',compact('permits'));
+                if ($permits[0]->turn) {
+                    $turno = $permits[0]->turn == 'm' ? 'Mañana' : 'Tarde';
+                }else{
+                    $turno = null;
+                }
+                return view('permits.permit_request',compact('permits','turno'));
             }
         }
         return back()->with('warning','No tiene nuevas solicitudes');
@@ -308,13 +314,64 @@ class PermitController extends Controller
         }else{
             $turno = null;
         }
-
         if(auth()->user()->role->id == Role::ANALISTA_PERMISOS || auth()->user()->id == $applicant->id){
             $pdf = \PDF::loadView('reports.reporte_permiso',['permit'=>$permit,'applicant'=>$applicant,'supervisor'=>$supervisor,'turno'=>$turno]);
             return $pdf->stream();
         }else{
-            return back()->with('error','Error, no puede visualizar esta constancia');
+            return back()->with('error','Error, no puede visualizar esta constancia.');
         }
 
+    }
+
+    public function revision(){
+        $permits = Permit::where('state',Permit::APROBADO)->with('applicant')->get();
+        if(!$permits->isEmpty()){
+            if($permits[0]->applicant->state != User::PERMIT){
+                if ($permits[0]->turn){
+                    $turno = $permits[0]->turn == 'm' ? 'Mañana' : 'Tarde';
+                }else{
+                    $turno = null;
+                }
+                return view('permits.permit_revision',compact('permits','turno'));
+            }
+        }
+        return back()->with('info','No hay solicitudes nuevas para revisar.');
+    }
+
+    public function records(){
+        $permits = Permit::orderby('id','DESC')->get();
+        if(!$permits->isEmpty()){
+            if ($permits[0]->turn){
+                $turno = $permits[0]->turn == 'm' ? 'Mañana' : 'Tarde';
+            }else{
+                $turno = null;
+            }
+            return view('permits.permit_records',compact('permits','turno'));
+        }
+        return back()->with('info','No hay registros.');
+    }
+
+    public function checkRefund(){
+        $permits = Permit::where("state",Permit::DISFRUTANDO)->where("end_date",">=",Carbon::now()->format('Y-m-d'))->get();
+        if(!$permits->isEmpty()){
+            if ($permits[0]->turn){
+                $turno = $permits[0]->turn == 'm' ? 'Mañana' : 'Tarde';
+            }else{
+                $turno = null;
+            }
+            return view('permits.permit_checkRefund',compact('permits','turno'));
+        }
+        alert()->info("No hay registros de permisos culminados aún...")->persistent();
+        return back();
+    }
+
+    public function refund(Request $request, $id){
+        $p = Permit::findOrFail($id);
+        $p->state = Permit::COMPLETO;
+        $p->save();
+        $u = User::findOrFail($p->applicant_id);
+        $u->state = User::AVAILABLE;
+        $u->save();
+        return redirect(route('permits.menu'))->with('success','Se ha editado el estado del usuario correctemente');
     }
 }

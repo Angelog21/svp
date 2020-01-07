@@ -11,12 +11,17 @@
 |
 */
 
+
+
 Auth::routes();
 
 Route::group(['middleware'=>['auth']], function(){
     Route::get('/', 'HomeController@index')->name('home');
+    Route::get('/prueba','HomeController@prueba')->name('prueba');
     Route::get('/notificaciones','Notification\NotificationController@index')->name('notifications');
     Route::get('/manuales','Notification\NotificationController@manuales')->name('manuales');
+    Route::get('/manual','Notification\NotificationController@manual')->name('manual');
+    Route::get('/manual_especial','Notification\NotificationController@manualEspecial')->name('manualEspecial');
 
     Route::group(['middleware' => ['root']], function () {
         Route::get('/traza','Trace\TraceController@index')->name('traces');
@@ -41,6 +46,9 @@ Route::group(['middleware'=>['auth']], function(){
         Route::group(['middleware'=>['directors']], function(){
             Route::get('/estadisticas','Stadistics\StadisticsController@getStadistics')->name('holidays.stadistics');
             Route::get('/estadisticas-oficina','Stadistics\StadisticsController@getStadisticsByOffice')->name('holidays.stadisticsByOffice');
+            Route::get('/suspender_vacaciones/{id}','Suspension\SuspensionController@show')->name('holidays.suspension');
+            Route::post('/crear_suspension','Suspension\SuspensionController@store')->name('holidays.createSuspension');
+            Route::get('/personal_vacaciones_pdf','Stadistics\StadisticsController@getPersonalHoliday')->name('holidays.pdfGeneral');
         });
         //acceso solo a los analistas de vacaciones
         Route::group(['middleware'=>['analist']], function(){
@@ -49,7 +57,7 @@ Route::group(['middleware'=>['auth']], function(){
             Route::get('/historiales','Holiday\HolidayController@records')->name('holidays.checkRecord');
             Route::post('/crear_fecha','FreeDay\FreeDayController@store')->name('holidays.createFreeDay');
             Route::get('/visualizar_fecha/{id}','FreeDay\FreeDayController@edit')->name('holidays.editFreeDay');
-            Route::put('/actualizar/{id}','FreeDay\FreeDayController@update')->name('holidays.updateFreeDay');
+            Route::put('/actualizar_fecha/{id}','FreeDay\FreeDayController@update')->name('holidays.updateFreeDay');
             Route::get('/eliminar_fecha/{id}','FreeDay\FreeDayController@destroy')->name('holidays.deleteFreeDay');
             Route::get('/confirmar_reintegro','Holiday\HolidayController@checkRefund')->name('holidays.checkRefund');
             Route::get('/confirmar_reintegro/{id}','Holiday\HolidayController@edit')->name('holidays.editHoliday');
@@ -57,7 +65,8 @@ Route::group(['middleware'=>['auth']], function(){
             Route::get('/administrar_personal','Holiday\HolidayController@manageStaff')->name('holidays.manageStaff');
             Route::get('/administrar_personal/{cedula?}','User\UserController@search')->name('holidays.search');
             Route::post('/crear_periodo','Period\PeriodController@store')->name('holidays.periodStore');
-            Route::get('/crear_vacacion/{user_id?}','Holiday\HolidayController@createHoliday')->name('holidays.createHoliday');
+            Route::get('/administrar_vacaciones/{user_id?}','Holiday\HolidayController@createHoliday')->name('holidays.createHoliday');
+            Route::post('/crear_vacacion','Holiday\HolidayController@createByStaff')->name('holidays.createByStaff');
         });
 
     });
@@ -82,12 +91,21 @@ Route::group(['middleware'=>['auth']], function(){
         Route::group(['middleware'=>['directors']], function(){
             Route::get('/estadisticas','Stadistics\StadisticsController@getStadistics')->name('permits.stadistics');
             Route::get('/estadisticas-oficina','Stadistics\StadisticsController@getStadisticsByOffice')->name('permits.stadisticsByOffice');
+            Route::get('/personal_permiso_pdf','Stadistics\StadisticsController@getPersonal')->name('permits.pdfGeneral');
         });
-        //acceso solo a los analistas de vacaciones
+        //acceso solo a los analistas de permisos
         Route::group(['middleware'=>['analist']], function(){
             Route::get('/revision','Permit\PermitController@revision')->name('permits.revision');
             Route::get('/estado_usuario/{id}','User\UserController@edit')->name('permits.editUser');
             Route::get('/historiales','Permit\PermitController@records')->name('permits.checkRecord');
+            Route::get('/admin_motivo','Reason\ReasonController@index')->name('permits.reasonAdmin');
+            Route::post('/crear_motivo','Reason\ReasonController@store')->name('permits.createReason');
+            Route::get('/visualizar_motivo/{id}','Reason\ReasonController@edit')->name('permits.editReason');
+            Route::put('/actualizar_motivo/{id}','Reason\ReasonController@update')->name('permits.updateReason');
+            Route::get('/eliminar_motivo/{id}','Reason\ReasonController@destroy')->name('permits.deleteReason');
+            Route::get('/confirmar_reintegro','Permit\PermitController@checkRefund')->name('permits.checkRefund');
+            Route::get('/confirmar_reintegro/{id}','Permit\PermitController@edit')->name('permits.editPermit');
+            Route::put('/actualizar/{id}','Permit\PermitController@refund')->name('permits.refundPermit');
         });
     });
 });

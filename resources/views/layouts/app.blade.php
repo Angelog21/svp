@@ -28,7 +28,9 @@
             @yield('title')
             @yield('content')
         </main>
-        @include('partials.footer')
+        @if (Request::path() != 'login')
+            @include('partials.footer')
+        @endif
     <!-- Scripts -->
     <script src="{{asset('js/raphael.js')}}"></script>
     <script src="{{ asset('js/app.js') }}"></script>
@@ -37,8 +39,11 @@
     @if(strpos(Request::path(),'permits/estadisticas') !== false || strpos(Request::path(),'holidays/estadisticas') !== false)
         @include('partials.stadistics.scriptgraphics')
     @endif
-    @if(Request::path() == 'holidays/administrar_personal' || strpos(Request::path(),'holidays/crear_vacacion') !== false)
+    @if(Request::path() == 'holidays/administrar_personal')
         @include('partials.manageStaff.script')
+    @endif
+    @if(strpos(Request::path(),'holidays/administrar_vacaciones') !== false)
+        @include('partials.manageStaff.script2')
     @endif
 </body>
 </html>

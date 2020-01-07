@@ -116,7 +116,7 @@ class User extends Authenticatable
     }
 
     public static function getApprover($id){
-        if($id != 0){
+        if($id == 0){
             $approver = User::where('role_id',Role::DIRECTOR_LINEA)->where('direction_id',auth()->user()->office_id)->where('id','<>',auth()->user()->id)->get();
             if($approver->isEmpty()){
                 $approver = User::where('role_id',Role::DIRECTOR_GENERAL)->where('office_id',auth()->user()->office_id)->get();
@@ -126,9 +126,9 @@ class User extends Authenticatable
             }
         }else{
             $user = User::where('id',$id)->get();
-            $approver = User::where('role_id',Role::DIRECTOR_LINEA)->where('direction_id',$user->office_id)->where('id','<>',$id)->get();
+            $approver = User::where('role_id',Role::DIRECTOR_LINEA)->where('direction_id',$user[0]->office_id)->where('id','<>',$id)->get();
             if($approver->isEmpty()){
-                $approver = User::where('role_id',Role::DIRECTOR_GENERAL)->where('office_id',$user->office_id)->get();
+                $approver = User::where('role_id',Role::DIRECTOR_GENERAL)->where('office_id',$user[0]->office_id)->get();
                 if($approver->isEmpty()){
                     $approver = User::where('role_id',Role::SUPERADMIN)->get();
                 }

@@ -23,6 +23,18 @@ class NotificationController extends Controller
         return back()->with('info','No tiene notificaciones');
     }
 
-    public function manuales(){}
+    public function manuales(){
+        return view('manuals');
+    }
+
+    public function manual(){
+        $pdf = \PDF::loadView('reports.manual_general');
+        return $pdf->stream();
+    }
+
+    public function manualEspecial(){
+        $pdf = \PDF::loadView('reports.manual_especial');
+        return $pdf->stream();
+    }
 
 }
